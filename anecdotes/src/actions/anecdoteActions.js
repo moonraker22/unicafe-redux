@@ -1,6 +1,5 @@
 const VOTE = 'VOTE'
 const CREATE = 'CREATE'
-const ANECDOTE_TEXT = 'ANECDOTE_TEXT'
 
 const voteAction = (id) => {
   return {
@@ -14,18 +13,5 @@ const createAction = (content) => {
     data: content,
   }
 }
-const anecdoteTextAction = (text) => {
-  return {
-    type: ANECDOTE_TEXT,
-    data: text,
-  }
-}
 
-export {
-  VOTE,
-  CREATE,
-  ANECDOTE_TEXT,
-  voteAction,
-  createAction,
-  anecdoteTextAction,
-}
+export { VOTE, CREATE, voteAction, createAction }
