@@ -7,6 +7,9 @@ import reducer from './reducers/anecdoteReducer'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
 const store = createStore(reducer, composeWithDevTools())
+store.subscribe(() => {
+  console.log('store changed', store.getState())
+})
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store={store}>
