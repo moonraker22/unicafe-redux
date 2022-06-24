@@ -2,15 +2,18 @@ import { useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { create } from '../features/anecdotesSlice'
 import { set, clear } from '../features/notificationSlice'
+import anecdoteService from '../services/anecdotes'
 
 const AnecdoteForm = () => {
   const anecdoteRef = useRef()
   const dispatch = useDispatch()
 
-  const createFunc = (content, event) => {
+  const createFunc = async (content, event) => {
     event.preventDefault()
-    dispatch(create(content))
-    dispatch(set(`Created anecdote: ${content}`))
+    // eslint-disable-next-line no-unused-vars
+    const newAnecdote = await anecdoteService.create(content)
+    dispatch(create(newAnecdote))
+    dispatch(set(`New Anecdote: ${content}`))
     anecdoteRef.current.value = ''
     setTimeout(() => dispatch(clear()), 5000)
   }
