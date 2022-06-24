@@ -18,9 +18,6 @@ const store = configureStore({
   enhancers: [],
 })
 
-store.subscribe(() => {
-  console.log('store changed', store.getState())
-})
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store={store}>
