@@ -1,10 +1,9 @@
-import { useDispatch } from 'react-redux'
+import { connect } from 'react-redux'
 import { set } from '../features/filterSlice'
 
-const Filter = () => {
-  const dispatch = useDispatch()
+const Filter = (props) => {
   const handleChange = (event) => {
-    dispatch(set(event.target.value))
+    props.set(event.target.value)
   }
   const style = {
     marginBottom: 10,
@@ -17,4 +16,18 @@ const Filter = () => {
   )
 }
 
-export default Filter
+const mapStateToProps = (state) => {
+  return {
+    filter: state.filter,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    set: (filter) => dispatch(set(filter)),
+  }
+}
+
+const ConnectedFilter = connect(mapStateToProps, mapDispatchToProps)(Filter)
+
+export default ConnectedFilter

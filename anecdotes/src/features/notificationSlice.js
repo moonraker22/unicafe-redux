@@ -7,11 +7,15 @@ const initialState = {
   error: null,
 }
 
+let timeoutID
+
 export const notificationSet = createAsyncThunk(
   'notification/set',
   async (message, timer) => {
-    const clearTimer = timer.extra.timer(message.time * 1000)
-    clearTimer.then(() => timer.dispatch(clear()))
+    clearTimeout(timeoutID)
+    timeoutID = setTimeout(() => {
+      timer.dispatch(clear())
+    }, message.time * 1000)
     return message
   }
 )

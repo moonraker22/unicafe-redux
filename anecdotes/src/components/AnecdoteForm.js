@@ -1,16 +1,18 @@
 import { useRef } from 'react'
-import { useDispatch } from 'react-redux'
 import { createAnecdote } from '../features/anecdotesSlice'
 import { notificationSet } from '../features/notificationSlice'
+import { connect } from 'react-redux'
 
-const AnecdoteForm = () => {
+const AnecdoteForm = (props) => {
   const anecdoteRef = useRef()
-  const dispatch = useDispatch()
 
   const createAnecdoteHandler = async (content, event) => {
     event.preventDefault()
-    dispatch(createAnecdote(content))
-    dispatch(notificationSet({ message: `New Anecdote: ${content}`, time: 5 }))
+    props.createAnecdote(content)
+    props.notificationSet({
+      message: `You created a new anecdote: ${content}`,
+      time: 5,
+    })
     anecdoteRef.current.value = ''
   }
 
@@ -29,4 +31,22 @@ const AnecdoteForm = () => {
   )
 }
 
-export default AnecdoteForm
+const mapStateToProps = (state) => {
+  return {
+    anecdotes: state.anecdotes,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    createAnecdote: (content) => dispatch(createAnecdote(content)),
+    notificationSet: (notification) => dispatch(notificationSet(notification)),
+  }
+}
+
+const ConnectedAnecdoteForm = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AnecdoteForm)
+
+export default ConnectedAnecdoteForm
