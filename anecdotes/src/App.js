@@ -5,19 +5,24 @@ import AnecdoteList from './components/AnecdoteList'
 import Notification from './components/Notification'
 import Filter from './components/Filter'
 import { useDispatch } from 'react-redux'
-import anecdoteService from './services/anecdotes'
-import { get } from './features/anecdotesSlice'
+// import anecdoteService from './services/anecdotes'
+// import { get, fetchAnecdotes } from './features/anecdotesSlice'
 
 const App = () => {
-  const { anecdotes } = useSelector((state) => state)
+  const { anecdotes } = useSelector((state) => state.anecdotes)
   const { notification } = useSelector((state) => state)
   const dispatch = useDispatch()
-
   useEffect(() => {
-    anecdoteService.getAll().then((anecdotes) => {
-      console.log(anecdotes)
-      dispatch(get(anecdotes))
-    })
+    // anecdoteService.getAll().then((anecdotes) => {
+    //   console.log(anecdotes)
+    //   dispatch(get(anecdotes))
+    //   // try {
+    //   //   dispatch(fetchAnecdotes(anecdotes))
+    //   // } catch (error) {
+    //   //   console.log(error)
+    //   // }
+    // })
+    // dispatch(fetchAnecdotes())
   }, [dispatch])
 
   return (

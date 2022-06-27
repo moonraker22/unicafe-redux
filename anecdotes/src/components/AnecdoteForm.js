@@ -1,27 +1,25 @@
 import { useRef } from 'react'
 import { useDispatch } from 'react-redux'
-import { create } from '../features/anecdotesSlice'
-import { set, clear } from '../features/notificationSlice'
-import anecdoteService from '../services/anecdotes'
+import { createAnecdote } from '../features/anecdotesSlice'
+import { notificationSet } from '../features/notificationSlice'
 
 const AnecdoteForm = () => {
   const anecdoteRef = useRef()
   const dispatch = useDispatch()
 
-  const createFunc = async (content, event) => {
+  const createAnecdoteHandler = async (content, event) => {
     event.preventDefault()
-    // eslint-disable-next-line no-unused-vars
-    const newAnecdote = await anecdoteService.create(content)
-    dispatch(create(newAnecdote))
-    dispatch(set(`New Anecdote: ${content}`))
+    dispatch(createAnecdote(content))
+    dispatch(notificationSet({ message: `New Anecdote: ${content}`, time: 5 }))
     anecdoteRef.current.value = ''
-    setTimeout(() => dispatch(clear()), 5000)
   }
 
   return (
     <div>
       <h2>create new</h2>
-      <form onSubmit={(e) => createFunc(anecdoteRef.current.value, e)}>
+      <form
+        onSubmit={(e) => createAnecdoteHandler(anecdoteRef.current.value, e)}
+      >
         <div>
           <input name="anecdote" ref={anecdoteRef} defaultValue={''} />
         </div>

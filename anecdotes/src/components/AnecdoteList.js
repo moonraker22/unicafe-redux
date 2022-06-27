@@ -1,14 +1,23 @@
 import { useDispatch } from 'react-redux'
-import { vote } from '../features/anecdotesSlice'
 import { useSelector } from 'react-redux'
+import { voteAnecdote } from '../features/anecdotesSlice'
+import { notificationSet } from '../features/notificationSlice'
 
-const AnecdoteList = ({ anecdotes }) => {
+const AnecdoteList = () => {
   const dispatch = useDispatch()
 
   // pull filter text from store
   const filter = useSelector((state) => state.filter)
+  let { anecdotes } = useSelector((state) => state.anecdotes)
 
-  const anecdotesCopy = [...anecdotes]
+  let anecdotesCopy = [...anecdotes]
+
+  const voteHandler = (anecdote) => {
+    dispatch(voteAnecdote(anecdote.id))
+    dispatch(
+      notificationSet({ message: `You voted for ${anecdote.content}`, time: 5 })
+    )
+  }
 
   return (
     <div>
@@ -20,7 +29,7 @@ const AnecdoteList = ({ anecdotes }) => {
             <div>{anecdote.content}</div>
             <div>
               has {anecdote.votes}
-              <button onClick={() => dispatch(vote(anecdote.id))}>vote</button>
+              <button onClick={() => voteHandler(anecdote)}>vote</button>
             </div>
           </div>
         ))}

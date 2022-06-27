@@ -23,5 +23,24 @@ const create = async (content) => {
   return response.data
 }
 
+const vote = async (id) => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }
+
+  const anecdote = await axios.get(`${baseUrl}/${id}`)
+  const response = await axios.patch(
+    `${baseUrl}/${id}`,
+    {
+      votes: anecdote.data.votes + 1,
+    },
+    config
+  )
+
+  return response.data
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, create }
+export default { getAll, create, vote }

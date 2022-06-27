@@ -1,28 +1,37 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 // import { nanoid } from '@reduxjs/toolkit'
+import anecdoteService from '../services/anecdotes'
 
-// const anecdotesAtStart = [
-//   'If it hurts, do it more often',
-//   'Adding manpower to a late software project makes it later!',
-//   'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
-//   'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
-//   'Premature optimization is the root of all evil.',
-//   'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
-// ]
+const initialState = {
+  anecdotes: [],
+  status: 'idle',
+  error: null,
+}
 
-// const getId = () => (100000 * Math.random()).toFixed(0)
+// Async thunk for fetching anecdotes
+export const fetchAnecdotes = createAsyncThunk('anecdotes/fetch', async () => {
+  const anecdotes = await anecdoteService.getAll()
+  return anecdotes
+})
 
-// const asObject = (anecdote) => {
-//   return {
-//     content: anecdote,
-//     // id: getId(),
-//     id: nanoid(),
-//     votes: 0,
-//   }
-// }
+// Async thunk for creating a new anecdote
+export const createAnecdote = createAsyncThunk(
+  'anecdotes/create',
+  async (anecdote) => {
+    if (!anecdote) {
+      console.error('No anecdote to create')
+      return
+    }
+    const newAnecdote = await anecdoteService.create(anecdote)
+    return newAnecdote
+  }
+)
 
-// const initialState = anecdotesAtStart.map(asObject)
-const initialState = []
+// Async thunk for voting on an anecdote
+export const voteAnecdote = createAsyncThunk('anecdotes/vote', async (id) => {
+  const anecdote = await anecdoteService.vote(id)
+  return anecdote
+})
 
 const anecdoteSlice = createSlice({
   name: 'anecdotes',
@@ -30,26 +39,13 @@ const anecdoteSlice = createSlice({
   reducers: {
     vote: (state, action) => {
       const id = action.payload
-      const anecdote = state.find((a) => a.id === id)
-      // const updatedAnecdote = {
-      //   ...anecdote,
-      // }
-      // updatedAnecdote.votes = updatedAnecdote.votes + 1
-      // return state.map((a) => (a.id === id ? updatedAnecdote : a))
+      const anecdote = state.anecdotes.find((a) => a.id === id)
       anecdote.votes++
-      state.map((a) => (a.id === id ? anecdote : a))
+      state.anecdotes.map((a) => (a.id === id ? anecdote : a))
     },
-    // create: (state, action) => [...state, asObject(action.payload)],
-    // create: (state, action) => {
-    //   const anecdote = action.payload
-    //   state.push({
-    //     content: anecdote,
-    //     id: nanoid(),
-    //     votes: 0,
-    //   })
-    // },
+
     create: (state, action) => {
-      state.push({ ...action.payload })
+      state.anecdotes.push({ ...action.payload })
     },
     filter: (state, action) => {
       const filter = action.payload
@@ -58,8 +54,43 @@ const anecdoteSlice = createSlice({
       )
     },
     get: (state, action) => {
-      state.push(...action.payload)
+      state.anecdotes.push(...action.payload)
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchAnecdotes.pending, (state, action) => {
+      state.status = 'loading'
+    })
+    builder.addCase(fetchAnecdotes.fulfilled, (state, action) => {
+      state.anecdotes = action.payload
+      state.status = 'success'
+    })
+    builder.addCase(fetchAnecdotes.rejected, (state, action) => {
+      state.error = action.error.message
+      state.status = 'error'
+    })
+    builder.addCase(createAnecdote.pending, (state, action) => {
+      state.status = 'loading'
+    })
+    builder.addCase(createAnecdote.fulfilled, (state, action) => {
+      state.anecdotes.push(action.payload)
+      state.status = 'success'
+    })
+    builder.addCase(createAnecdote.rejected, (state, action) => {
+      state.error = action.error.message
+      state.status = 'error'
+    })
+    builder.addCase(voteAnecdote.pending, (state, action) => {
+      state.status = 'loading'
+    })
+    builder.addCase(voteAnecdote.fulfilled, (state, action) => {
+      state.anecdotes.map((a) => (a.id === action.payload.id ? a.votes++ : a))
+      state.status = 'success'
+    })
+    builder.addCase(voteAnecdote.rejected, (state, action) => {
+      state.error = action.error.message
+      state.status = 'error'
+    })
   },
 })
 
